@@ -1,5 +1,5 @@
 import random
-from time import sleep
+import copy
 
 
 def magic(ms_arr, n):
@@ -36,23 +36,227 @@ def build_board():
 
 
 # Check for empty places on board
-def possibilities(ms_arr, ms_arr_dict):
+def possibilities(ms_arr, ms_arr_dict, mode, *args):
     q = []
+    n = len(ms_arr)
+    player = args[0]
 
-    for i in range(len(ms_arr)):
-        for j in range(len(ms_arr)):
+    if mode == "p" or mode == "c" or (mode == "cp" and player == "p"):
+        for i in range(n):
+            for j in range(n):
+                if ms_arr_dict[ms_arr[i][j]] == "empty":
+                    q.append((i, j))
+        return q
 
-            if ms_arr_dict[ms_arr[i][j]] == "empty":
-                q.append((i, j))
-    return q
+    elif mode == "cp" and player == "c":
+        counter = args[1]
+        p1 = args[2]
+        if p1 == "c":
+            if counter == 1:
+                q.append((int(n / 2), int(n / 2)))
+                return q
+            elif counter == 3:
+                if ms_arr_dict[ms_arr[n - 1][n - 1]] == "empty":
+                    q.append((n - 1, n - 1))
+                    return q
+                elif ms_arr_dict[ms_arr[0][n - 1]] == "empty":
+                    q.append((0, n - 1))
+                    return q
+            elif counter == 5:
+                for i in range(n):
+                    for j in range(n):
+                        ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                        if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                            ms_arr_dict2[ms_arr[i][j]] = "c"
+                            if (row_win(ms_arr, "c", ms_arr_dict2) or col_win(ms_arr, "c", ms_arr_dict2) or
+                                    diag_win(ms_arr, "c", ms_arr_dict2)):
+                                q.append((i, j))
+                                return q
+                else:
+                    for i in range(n):
+                        for j in range(n):
+                            ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                            if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                ms_arr_dict2[ms_arr[i][j]] = "p"
+                                if (row_win(ms_arr, "p", ms_arr_dict2) or col_win(ms_arr, "p", ms_arr_dict2) or
+                                        diag_win(ms_arr, "p", ms_arr_dict2)):
+                                    q.append((i, j))
+                                    return q
+                    else:
+                        if ms_arr_dict[ms_arr[n - 1][0]] == "empty":
+                            q.append((n - 1, 0))
+                            return q
+                        elif ms_arr_dict[ms_arr[0][n - 1]] == "empty":
+                            q.append((0, n - 1))
+                            return q
+            elif counter == 7 or counter == 9:
+                for i in range(n):
+                    for j in range(n):
+                        ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                        if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                            ms_arr_dict2[ms_arr[i][j]] = "c"
+                            if (row_win(ms_arr, "c", ms_arr_dict2) or col_win(ms_arr, "c", ms_arr_dict2) or
+                                    diag_win(ms_arr, "c", ms_arr_dict2)):
+                                q.append((i, j))
+                                return q
+                else:
+                    for i in range(n):
+                        for j in range(n):
+                            ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                            if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                ms_arr_dict2[ms_arr[i][j]] = "p"
+                                if (row_win(ms_arr, "p", ms_arr_dict2) or col_win(ms_arr, "p", ms_arr_dict2) or
+                                        diag_win(ms_arr, "p", ms_arr_dict2)):
+                                    q.append((i, j))
+                                    return q
+                    else:
+                        for i in range(n):
+                            for j in range(n):
+                                ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                                if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                    q.append((i, j))
+                                    return q
+        elif p1 == "p":
+            if counter == 2:
+                if ms_arr_dict[ms_arr[int(n / 2)][int(n / 2)]] == "empty":
+                    q.append((int(n / 2), int(n / 2)))
+                else:
+                    q.append((0, 0))
+                return q
+            elif counter == 4:
+                for i in range(n):  # block where p can win
+                    for j in range(n):
+                        ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                        if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                            ms_arr_dict2[ms_arr[i][j]] = "p"
+                            if (row_win(ms_arr, "p", ms_arr_dict2) or col_win(ms_arr, "p", ms_arr_dict2) or
+                                    diag_win(ms_arr, "p", ms_arr_dict2)):
+                                q.append((i, j))
+                                return q
+                else:  # else make2
+                    if ms_arr_dict[ms_arr[int(n / 2)][int(n / 2)]] == "empty":  # middle place
+                        q.append((int(n / 2), int(n / 2)))
+                        return q
+                    else:
+                        if ms_arr_dict[ms_arr[0][0]] == "c":  # choose another corner
+                            if ms_arr_dict[ms_arr[0][n - 2]] == "empty" and ms_arr_dict[ms_arr[0][n - 1]] == "empty":
+                                q.append((0, n - 1))
+                                return q
+                            elif ms_arr_dict[ms_arr[n - 2][0]] == "empty" and ms_arr_dict[ms_arr[n - 1][0]] == "empty":
+                                q.append((n - 1, 0))
+                                return q
+                        elif ms_arr_dict[ms_arr[int(n / 2)][int(n / 2)]] == "c":  # choose appropriate edge
+                            # make corner if opponent has two opposite edges
+                            if ((ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[
+                                ms_arr[n - 1][int(n / 2)]] == "p") or
+                                    (ms_arr_dict[ms_arr[int(n / 2)][0]] == "p" and ms_arr_dict[
+                                        ms_arr[int(n / 2)][n - 1]] == "p")):
+                                q.append((0, 0))
+                                return q
+                            elif (ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[
+                                ms_arr[int(n / 2)][0]] == "p"):
+                                q.append((0, 0))
+                                return q
+                            elif (ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[
+                                ms_arr[int(n / 2)][n - 1]] == "p"):
+                                q.append((0, n - 1))
+                                return q
+                            elif (ms_arr_dict[ms_arr[n - 1][int(n / 2)]] == "p" and ms_arr_dict[
+                                ms_arr[int(n / 2)][0]] == "p"):
+                                q.append((n - 1, 0))
+                                return q
+                            elif (ms_arr_dict[ms_arr[n - 1][int(n / 2)]] == "p" and ms_arr_dict[
+                                ms_arr[int(n / 2)][n - 1]] == "p"):
+                                q.append((0, n - 1))
+                                return q
+                            elif ms_arr_dict[ms_arr[0][int(n / 2)]] == "empty" and ms_arr_dict[
+                                ms_arr[n - 1][int(n / 2)]] == "empty":
+                                q.append((0, int(n / 2)))
+                                return q
+                            elif ms_arr_dict[ms_arr[int(n / 2)][0]] == "empty" and ms_arr_dict[
+                                ms_arr[int(n / 2)][n - 1]] == "empty":
+                                q.append((int(n / 2), 0))
+                                return q
+                            elif ms_arr_dict[ms_arr[n - 1][0]] == "empty" and ms_arr_dict[
+                                ms_arr[n - 1][n - 1]] == "empty":
+                                q.append((n - 1, 0))
+                                return q
+            elif counter == 6:
+                for i in range(n):  # check if c can win
+                    for j in range(n):
+                        ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                        if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                            ms_arr_dict2[ms_arr[i][j]] = "c"
+                            if (row_win(ms_arr, "c", ms_arr_dict2) or col_win(ms_arr, "c", ms_arr_dict2) or
+                                    diag_win(ms_arr, "c", ms_arr_dict2)):
+                                q.append((i, j))
+                                return q
+                else:
+                    for i in range(n):  # check and block if p can win
+                        for j in range(n):
+                            ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                            if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                ms_arr_dict2[ms_arr[i][j]] = "p"
+                                if (row_win(ms_arr, "p", ms_arr_dict2) or col_win(ms_arr, "p", ms_arr_dict2) or
+                                        diag_win(ms_arr, "p", ms_arr_dict2)):
+                                    q.append((i, j))
+                                    return q
+                    else:
+                        if ms_arr_dict[ms_arr[int(n / 2)][int(n / 2)]] == "empty":  # middle place
+                            q.append((int(n / 2), int(n / 2)))
+                            return q
+                        else:  # choose where c can win on next 2 moves
+                            for i in range(n):
+                                for j in range(n):
+                                    ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                                    if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                        ms_arr_dict2[ms_arr[i][j]] = "c"
+                                    for k in range(n):
+                                        for l in range(n):
+                                            ms_arr_dict22 = copy.deepcopy(ms_arr_dict2)
+                                            if ms_arr_dict22[ms_arr[k][l]] == "empty":
+                                                ms_arr_dict2[ms_arr[k][l]] = "c"
+                                                if (row_win(ms_arr, "c", ms_arr_dict22) or
+                                                        col_win(ms_arr, "c", ms_arr_dict22) or
+                                                        diag_win(ms_arr, "c", ms_arr_dict22)):
+                                                    q.append((i, j))
+                                                    return q
+            elif counter == 8:
+                for i in range(n):  # check if c can win
+                    for j in range(n):
+                        ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                        if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                            ms_arr_dict2[ms_arr[i][j]] = "c"
+                            if (row_win(ms_arr, "c", ms_arr_dict2) or col_win(ms_arr, "c", ms_arr_dict2) or
+                                    diag_win(ms_arr, "c", ms_arr_dict2)):
+                                q.append((i, j))
+                                return q
+                else:
+                    for i in range(n):  # check if p can win
+                        for j in range(n):
+                            ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                            if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                ms_arr_dict2[ms_arr[i][j]] = "p"
+                                if (row_win(ms_arr, "p", ms_arr_dict2) or col_win(ms_arr, "p", ms_arr_dict2) or
+                                        diag_win(ms_arr, "p", ms_arr_dict2)):
+                                    q.append((i, j))
+                                    return q
+                    else:
+                        for i in range(n):  # go anywhere
+                            for j in range(n):
+                                ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                                if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                    q.append((i, j))
+                                    return q
 
 
 # Select a random place for the player
-def random_place(ms_arr, player, ms_arr_dict, mode):
-    selection = possibilities(ms_arr, ms_arr_dict)
+def random_place(ms_arr, player, ms_arr_dict, mode, *args):
     if mode == "c":
+        selection = possibilities(ms_arr, ms_arr_dict, mode, "p" if player == "player" else "c")
         current_loc = random.choice(selection)
     elif mode == "p":
+        selection = possibilities(ms_arr, ms_arr_dict, mode, "p" if player == "player" else "c")
         while (1):
             print("\n\nSelect location from: " + str(
                 selection) + " for player " + player + " move\t (unspaced, comma separated coordinates)")
@@ -62,6 +266,9 @@ def random_place(ms_arr, player, ms_arr_dict, mode):
             else:
                 break
     elif mode == "cp":
+        counter = args[0]
+        p1 = args[1]
+        selection = possibilities(ms_arr, ms_arr_dict, mode, "p" if player == "player" else "c", counter, p1)
         if player == "player":
             while (1):
                 print("\n\nSelect location from: " + str(
@@ -73,6 +280,7 @@ def random_place(ms_arr, player, ms_arr_dict, mode):
                     break
         elif player == "comp":
             current_loc = random.choice(selection)
+
         ms_arr_dict[ms_arr[current_loc[0]][current_loc[1]]] = "c" if player == "comp" else "p"
         return ms_arr, ms_arr_dict
 
@@ -152,7 +360,7 @@ def diag_win(ms_arr, player, ms_arr_dict):
 def evaluate(ms_arr, ms_arr_dict, mode, *args):
     winner = 0
     if mode == "cp":
-      p1 = args[0]
+        p1 = args[0]
     for player in ["1", "2"]:
         if mode == "cp":
             if p1 == "p":
@@ -199,12 +407,12 @@ def drawboard(ms_arr_dict):
     for x in ms_arr_dict:
         if i == 3:
             i = 0
-            print()
+            print("\n_________")
         i += 1
         if ms_arr_dict[x] == "empty":
-            print("_" + " ", end=" ")
+            print("_" + " ", end="  ")
         else:
-            print(ms_arr_dict[x] + " ", end=" ")
+            print(ms_arr_dict[x] + " ", end="  ")
 
 
 # Main function to start the game
@@ -213,7 +421,6 @@ def play_game(mode):
     winner = 0
     counter = 1
     drawboard(tracker_dict)
-    sleep(1)
 
     p1 = ""
     if mode == "cp":
@@ -230,19 +437,19 @@ def play_game(mode):
             if mode == "cp":
                 if p1 == "p":
                     if player == "1":
-                        board_arr, tracker_dict = random_place(board_arr, "player", tracker_dict, mode)
+                        board_arr, tracker_dict = random_place(board_arr, "player", tracker_dict, mode, counter, p1)
                         print("\nBoard after move number " + str(counter) + " (Player)")
 
                     else:
-                        board_arr, tracker_dict = random_place(board_arr, "comp", tracker_dict, mode)
+                        board_arr, tracker_dict = random_place(board_arr, "comp", tracker_dict, mode, counter, p1)
                         print("\nBoard after move number " + str(counter) + " (Computer)")
 
                 elif p1 == "c":
                     if player == "1":
-                        board_arr, tracker_dict = random_place(board_arr, "comp", tracker_dict, mode)
+                        board_arr, tracker_dict = random_place(board_arr, "comp", tracker_dict, mode, counter, p1)
                         print("\nBoard after move number " + str(counter) + " (Computer)")
                     else:
-                        board_arr, tracker_dict = random_place(board_arr, "player", tracker_dict, mode)
+                        board_arr, tracker_dict = random_place(board_arr, "player", tracker_dict, mode, counter, p1)
                         print("\nBoard after move number " + str(counter) + " (Player)")
                 drawboard(tracker_dict)
                 counter += 1
@@ -258,17 +465,29 @@ def play_game(mode):
                 if winner != 0:
                     break
 
-    return winner
+    return winner, p1
 
 
 # Driver Code
 for i in range(5):
-    print("Which mode?\tComputer vs Computer (c) or Player vs Player(p) or Computer vs Player(cp)")
+    print("Which mode?\tComputer vs Player(cp) or Computer vs Computer (c) or Player vs Player(p)")
     mode = str(input())
     if mode != "c" and mode != "p" and mode != "cp":
         print("Incorrect mode input")
-    res = play_game(mode)
+        break
+    res, p1 = play_game(mode)
     if res == -1:
         print("\n\nMatch finished in a Tie.\n")
+    elif mode == "cp":
+        if p1 == "p":
+            if res == 1:
+                print("\n\nPlayer Wins\n")
+            else:
+                print("\n\nComputer Wins\n")
+        else:
+            if res == 1:
+                print("\n\nComputer Wins\n")
+            else:
+                print("\n\nPlayer Wins\n")
     else:
         print("\n\nPlayer " + str(res) + " Wins\n")
