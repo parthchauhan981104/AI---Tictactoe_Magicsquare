@@ -35,7 +35,7 @@ def build_board():
     return ms_arr, ms_arr_dict
 
 
-# Check for empty places on board
+# Return the appropriate move
 def possibilities(ms_arr, ms_arr_dict, mode, *args):
     q = []
     n = len(ms_arr)
@@ -211,16 +211,16 @@ def possibilities(ms_arr, ms_arr_dict, mode, *args):
                                     ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
                                     if ms_arr_dict2[ms_arr[i][j]] == "empty":
                                         ms_arr_dict2[ms_arr[i][j]] = "c"
-                                    for k in range(n):
-                                        for l in range(n):
-                                            ms_arr_dict22 = copy.deepcopy(ms_arr_dict2)
-                                            if ms_arr_dict22[ms_arr[k][l]] == "empty":
-                                                ms_arr_dict2[ms_arr[k][l]] = "c"
-                                                if (row_win(ms_arr, "c", ms_arr_dict22) or
-                                                        col_win(ms_arr, "c", ms_arr_dict22) or
-                                                        diag_win(ms_arr, "c", ms_arr_dict22)):
-                                                    q.append((i, j))
-                                                    return q
+                                        for k in range(n):
+                                            for l in range(n):
+                                                ms_arr_dict22 = copy.deepcopy(ms_arr_dict2)
+                                                if ms_arr_dict22[ms_arr[k][l]] == "empty":
+                                                    ms_arr_dict2[ms_arr[k][l]] = "c"
+                                                    if (row_win(ms_arr, "c", ms_arr_dict22) or
+                                                            col_win(ms_arr, "c", ms_arr_dict22) or
+                                                            diag_win(ms_arr, "c", ms_arr_dict22)):
+                                                        q.append((i, j))
+                                                        return q
             elif counter == 8:
                 for i in range(n):  # check if c can win
                     for j in range(n):
@@ -402,7 +402,7 @@ def evaluate(ms_arr, ms_arr_dict, mode, *args):
     return winner
 
 
-def drawboard(ms_arr_dict):
+def drawboard(ms_arr_dict, mode):
     i = 0
     for x in ms_arr_dict:
         if i == 3:
@@ -412,7 +412,17 @@ def drawboard(ms_arr_dict):
         if ms_arr_dict[x] == "empty":
             print("_" + " ", end="  ")
         else:
-            print(ms_arr_dict[x] + " ", end="  ")
+            print(ms_arr_dict[x] + " ", end="\t")
+    if mode == "cp":
+        print("\n\nList 1 : ", end="\t")
+        for x in ms_arr_dict:
+            if ms_arr_dict[x] == "p":
+                print(str(x) + "\t", end="\t")
+
+        print("\n\nList 2 : ", end="\t")
+        for x in ms_arr_dict:
+            if ms_arr_dict[x] == "c":
+                print(str(x) + "\t", end="\t")
 
 
 # Main function to start the game
@@ -420,12 +430,12 @@ def play_game(mode):
     board_arr, tracker_dict = build_board()
     winner = 0
     counter = 1
-    drawboard(tracker_dict)
+    drawboard(tracker_dict, mode)
 
     p1 = ""
     if mode == "cp":
         while 1:
-            print("\nWho will play first?\t Computer(c) or Player(p) ")
+            print("\n\nWho will play first?\t Computer(c) or Player(p) ")
             p1 = str(input().rsplit()[0])
             if p1 not in ("p", "c"):
                 print("Invalid Player input. Enter again")
@@ -451,7 +461,7 @@ def play_game(mode):
                     else:
                         board_arr, tracker_dict = random_place(board_arr, "player", tracker_dict, mode, counter, p1)
                         print("\nBoard after move number " + str(counter) + " (Player)")
-                drawboard(tracker_dict)
+                drawboard(tracker_dict, mode)
                 counter += 1
                 winner = evaluate(board_arr, tracker_dict, mode, p1)
                 if winner != 0:
@@ -459,7 +469,7 @@ def play_game(mode):
             else:
                 board_arr, tracker_dict = random_place(board_arr, player, tracker_dict, mode)
                 print("\nBoard after move number " + str(counter))
-                drawboard(tracker_dict)
+                drawboard(tracker_dict, mode)
                 counter += 1
                 winner = evaluate(board_arr, tracker_dict, mode)
                 if winner != 0:
@@ -470,7 +480,7 @@ def play_game(mode):
 
 # Driver Code
 for i in range(5):
-    print("Which mode?\tComputer vs Player(cp) or Computer vs Computer (c) or Player vs Player(p)")
+    print("Which mode?\tComputer vs Player(cp) or Computer vs Computer Simulation (c) or Player vs Player(p)")
     mode = str(input())
     if mode != "c" and mode != "p" and mode != "cp":
         print("Incorrect mode input")
