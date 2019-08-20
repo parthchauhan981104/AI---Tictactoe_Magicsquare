@@ -147,37 +147,42 @@ def possibilities(ms_arr, ms_arr_dict, mode, *args):
                                 return q
                         elif ms_arr_dict[ms_arr[int(n / 2)][int(n / 2)]] == "c":  # choose appropriate edge
                             # make corner if opponent has two opposite edges
-                            if ((ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[
+                            if ((ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[  # top edge and bottom edge
                                 ms_arr[n - 1][int(n / 2)]] == "p") or
                                     (ms_arr_dict[ms_arr[int(n / 2)][0]] == "p" and ms_arr_dict[
                                         ms_arr[int(n / 2)][n - 1]] == "p")):
                                 q.append((0, 0))
                                 return q
-                            elif (ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[
+                            elif (ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[  # top edge and left edge
                                 ms_arr[int(n / 2)][0]] == "p"):
                                 q.append((0, 0))
                                 return q
-                            elif (ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[
+                            elif (ms_arr_dict[ms_arr[0][int(n / 2)]] == "p" and ms_arr_dict[  # top edge and right edge
                                 ms_arr[int(n / 2)][n - 1]] == "p"):
                                 q.append((0, n - 1))
                                 return q
                             elif (ms_arr_dict[ms_arr[n - 1][int(n / 2)]] == "p" and ms_arr_dict[
+                                # bottom edge and left edge
                                 ms_arr[int(n / 2)][0]] == "p"):
                                 q.append((n - 1, 0))
                                 return q
                             elif (ms_arr_dict[ms_arr[n - 1][int(n / 2)]] == "p" and ms_arr_dict[
+                                # bottom edge and right edge
                                 ms_arr[int(n / 2)][n - 1]] == "p"):
                                 q.append((0, n - 1))
                                 return q
                             elif ms_arr_dict[ms_arr[0][int(n / 2)]] == "empty" and ms_arr_dict[
+                                # top edge and bottom edge
                                 ms_arr[n - 1][int(n / 2)]] == "empty":
                                 q.append((0, int(n / 2)))
                                 return q
                             elif ms_arr_dict[ms_arr[int(n / 2)][0]] == "empty" and ms_arr_dict[
+                                # left edge and right edge
                                 ms_arr[int(n / 2)][n - 1]] == "empty":
                                 q.append((int(n / 2), 0))
                                 return q
                             elif ms_arr_dict[ms_arr[n - 1][0]] == "empty" and ms_arr_dict[
+                                # bottom left corner and bottom right corner
                                 ms_arr[n - 1][n - 1]] == "empty":
                                 q.append((n - 1, 0))
                                 return q
@@ -250,7 +255,7 @@ def possibilities(ms_arr, ms_arr_dict, mode, *args):
                                     return q
 
 
-# Select a random place for the player
+# Suitable places for the current player
 def random_place(ms_arr, player, ms_arr_dict, mode, *args):
     if mode == "c":
         selection = possibilities(ms_arr, ms_arr_dict, mode, "p" if player == "player" else "c")
