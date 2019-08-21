@@ -1,6 +1,7 @@
 # ..................................................IMPORTS............................................................
 import random
 import copy
+import pprint
 
 
 # .....................................................................................................................
@@ -235,7 +236,13 @@ def possibilities(ms_arr, ms_arr_dict, mode, *args):
                                                             col_win(ms_arr, "c", ms_arr_dict22) or
                                                             diag_win(ms_arr, "c", ms_arr_dict22)):
                                                         q.append((i, j))
-                                                        return q
+                            if not len(q):
+                                for i in range(len(ms_arr)):  # go anywhere
+                                    for j in range(len(ms_arr)):
+                                        ms_arr_dict2 = copy.deepcopy(ms_arr_dict)
+                                        if ms_arr_dict2[ms_arr[i][j]] == "empty":
+                                            q.append((i, j))
+                            return q
             elif counter == 8:
                 for i in range(n):  # check if c can win
                     for j in range(n):
@@ -276,7 +283,7 @@ def random_place(ms_arr, player, ms_arr_dict, mode, *args):
         selection = possibilities(ms_arr, ms_arr_dict, mode, "p" if player == "player" else "c")
         while (1):
             print("\n\nSelect location from: " + str(
-                selection) + " for player " + player + " move\t (unspaced, comma separated coordinates - example 0,0)")
+                selection) + " for player " + player + " move\t (unspaced, comma separated coordinates) - example 0,0")
             current_loc = list(map(int, input().split(",")))
             if (current_loc[0], current_loc[1]) not in selection:
                 print("Invalid move. Enter again")
@@ -289,14 +296,17 @@ def random_place(ms_arr, player, ms_arr_dict, mode, *args):
         if player == "player":
             while (1):
                 print("\n\nSelect location from: " + str(
-                    selection) + " for player " + "move\t (unspaced, comma separated coordinates - example 0,0)")
+                    selection) + " for player " + "move\t (unspaced, comma separated coordinates) - example 0,0")
                 current_loc = list(map(int, input().split(",")))
                 if (current_loc[0], current_loc[1]) not in selection:
                     print("Invalid move. Enter again")
                 else:
                     break
         elif player == "comp":
-            current_loc = random.choice(selection)
+            try:
+                current_loc = random.choice(selection)
+            except:
+                pass
 
         ms_arr_dict[ms_arr[current_loc[0]][current_loc[1]]] = "c" if player == "comp" else "p"
         return ms_arr, ms_arr_dict
@@ -449,6 +459,10 @@ def drawboard(ms_arr_dict, mode):  # draws the game board along with the lists o
 # Main function to control the game
 def play_game(mode):
     board_arr, tracker_dict = build_board()
+    print("\nMagic Square generated")
+    for i in range(len(board_arr)):
+        pprint.pprint(board_arr[i])
+    print("\n")
     winner = 0
     counter = 1
     drawboard(tracker_dict, mode)
@@ -502,7 +516,7 @@ def play_game(mode):
 # .....................................................................................................................
 
 # Driver Code
-for i in range(5):
+for i in range(5):  # sets how many times the game will run
     print("Which mode?\tComputer vs Player(cp) or Computer vs Computer Simulation (c) or Player vs Player(p)")
     mode = str(input())
     if mode != "c" and mode != "p" and mode != "cp":
