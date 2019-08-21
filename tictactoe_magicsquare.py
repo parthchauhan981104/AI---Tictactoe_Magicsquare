@@ -1,8 +1,14 @@
+# ..................................................IMPORTS............................................................
 import random
 import copy
 
 
-def magic(ms_arr, n):
+# .....................................................................................................................
+
+
+# .....................................................................................................................
+
+def magic(ms_arr, n):  # function to create a magic square
     ms_arr[int(n / 2)][n - 1] = 1
     r = int(n / 2) - 1
     c = n - 1 + 1
@@ -24,7 +30,9 @@ def magic(ms_arr, n):
     return ms_arr
 
 
-def build_board():
+# .....................................................................................................................
+
+def build_board():  # build a tic tac toe board using the created magic square
     n = 3  # dimension of magic square
     ms_arr = [[0 for q in range(n)] for p in range(n)]
     ms_arr = magic(ms_arr, n)
@@ -34,6 +42,8 @@ def build_board():
             ms_arr_dict.update({ms_arr[i][j]: "empty"})
     return ms_arr, ms_arr_dict
 
+
+# .....................................................................................................................
 
 # Return the appropriate move
 def possibilities(ms_arr, ms_arr_dict, mode, *args):
@@ -255,6 +265,8 @@ def possibilities(ms_arr, ms_arr_dict, mode, *args):
                                     return q
 
 
+# .....................................................................................................................
+
 # Suitable places for the current player
 def random_place(ms_arr, player, ms_arr_dict, mode, *args):
     if mode == "c":
@@ -264,7 +276,7 @@ def random_place(ms_arr, player, ms_arr_dict, mode, *args):
         selection = possibilities(ms_arr, ms_arr_dict, mode, "p" if player == "player" else "c")
         while (1):
             print("\n\nSelect location from: " + str(
-                selection) + " for player " + player + " move\t (unspaced, comma separated coordinates)")
+                selection) + " for player " + player + " move\t (unspaced, comma separated coordinates - example 0,0)")
             current_loc = list(map(int, input().split(",")))
             if (current_loc[0], current_loc[1]) not in selection:
                 print("Invalid move. Enter again")
@@ -277,7 +289,7 @@ def random_place(ms_arr, player, ms_arr_dict, mode, *args):
         if player == "player":
             while (1):
                 print("\n\nSelect location from: " + str(
-                    selection) + " for player " + " move\t (unspaced, comma separated coordinates)")
+                    selection) + " for player " + "move\t (unspaced, comma separated coordinates - example 0,0)")
                 current_loc = list(map(int, input().split(",")))
                 if (current_loc[0], current_loc[1]) not in selection:
                     print("Invalid move. Enter again")
@@ -293,8 +305,9 @@ def random_place(ms_arr, player, ms_arr_dict, mode, *args):
     return ms_arr, ms_arr_dict
 
 
-# Checks whether the player has three
-# of their marks in a horizontal row
+# .....................................................................................................................
+
+# Checks for a possible row win
 def row_win(ms_arr, player, ms_arr_dict):
     win = False
     n = len(ms_arr)
@@ -312,8 +325,7 @@ def row_win(ms_arr, player, ms_arr_dict):
     return win
 
 
-# Checks whether the player has three
-# of their marks in a vertical row
+# Checks for a possible column win
 def col_win(ms_arr, player, ms_arr_dict):
     win = False
     n = len(ms_arr)
@@ -331,8 +343,7 @@ def col_win(ms_arr, player, ms_arr_dict):
     return win
 
 
-# Checks whether the player has three
-# of their marks in a diagonal row
+# Checks for a possible diagonal win
 def diag_win(ms_arr, player, ms_arr_dict):
     win = False
     n = len(ms_arr)
@@ -360,8 +371,9 @@ def diag_win(ms_arr, player, ms_arr_dict):
     return win
 
 
-# Evaluates whether there is
-# a winner or a tie
+# .....................................................................................................................
+
+# Evaluates whether there is a winner or a tie
 def evaluate(ms_arr, ms_arr_dict, mode, *args):
     winner = 0
     if mode == "cp":
@@ -407,7 +419,9 @@ def evaluate(ms_arr, ms_arr_dict, mode, *args):
     return winner
 
 
-def drawboard(ms_arr_dict, mode):
+# .....................................................................................................................
+
+def drawboard(ms_arr_dict, mode):  # draws the game board along with the lists of both players
     i = 0
     for x in ms_arr_dict:
         if i == 3:
@@ -430,7 +444,9 @@ def drawboard(ms_arr_dict, mode):
                 print(str(x) + "\t", end="\t")
 
 
-# Main function to start the game
+# .....................................................................................................................
+
+# Main function to control the game
 def play_game(mode):
     board_arr, tracker_dict = build_board()
     winner = 0
@@ -482,6 +498,8 @@ def play_game(mode):
 
     return winner, p1
 
+
+# .....................................................................................................................
 
 # Driver Code
 for i in range(5):
